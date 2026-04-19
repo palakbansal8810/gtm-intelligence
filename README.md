@@ -1,4 +1,4 @@
-# GTM Intelligence System 🧠
+# GTM Intelligence System 
 ### Multi-Agent Go-To-Market Intelligence + Outbound Engine
 
 ---
@@ -7,79 +7,6 @@
 
 A distributed multi-agent AI system that accepts a natural language GTM query, decomposes it into structured sub-tasks, and uses autonomous agents to plan, retrieve, enrich, validate, rank, and generate outbound intelligence.
 
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        User Query                            │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-              ┌────────────▼────────────┐
-              │    Vector Memory (RAG)   │  ← FAISS similarity search
-              │  Check for past runs    │    Pseudo-embeddings (hash)
-              └────────────┬────────────┘
-                           │ (cache hit → inject context)
-              ┌────────────▼────────────┐
-              │      Planner Agent      │  ← Claude API
-              │  Decompose → structured │    Uses memory context hints
-              │  plan + filters         │
-              └────────────┬────────────┘
-                           │
-         ┌─────────────────▼──────────────────────┐
-         │           RETRY LOOP (max 3)            │
-         │                                         │
-         │  ┌──────────────────────────────────┐   │
-         │  │      Retrieval Agent             │   │
-         │  │  Validate & refine filters       │   │
-         │  │  Call mock/explorium company API          │   │   
-         │  │  Handle empty/over-constrained   │   │
-         │  └──────────────┬───────────────────┘   │
-         │                 │                        │
-         │  ┌──────────────▼───────────────────┐   │
-         │  │      Enrichment Agent            │   │
-         │  │  Hiring signals (mock/explorium API)       │   │  
-         │  │  Tech signals (mock/explorium API)         │   │
-         │  │  ICP scoring (fit/intent/growth) │   │
-         │  │  Buying signal detection         │   │
-         │  └──────────────┬───────────────────┘   │
-         │                 │                        │
-         │  ┌──────────────▼───────────────────┐   │
-         │  │   Critic / Validation Agent      │   │
-         │  │  Relevance check                 │   │
-         │  │  Hallucination detection         │   │
-         │  │  Verdict: accept/partial/reject  │   │
-         │  │  Correction instructions         │   │
-         │  └──────────────┬───────────────────┘   │
-         │                 │                        │
-         │     verdict=reject → retry ─────────────┘
-         └─────────────────┬──────────────────────────┘
-                           │ (accept or partial)
-              ┌────────────▼────────────┐
-              │    GTM Strategy Agent   │  ← Groq api
-              │  Multi-persona targeting│
-              │  • CEO hooks            │
-              │  • VP Sales hooks       │
-              │  • CTO hooks            │
-              │  Competitive intel      │
-              │  • Competitor mapping   │
-              │  • Positioning strategy │
-              │  • Displacement tactics │
-              └────────────┬────────────┘
-                           │
-              ┌────────────▼────────────┐
-              │   Store to Vector Memory │
-              │   (for future queries)   │
-              └────────────┬────────────┘
-                           │
-              ┌────────────▼────────────┐
-              │    Final JSON Output    │
-              │  + SSE stream to UI     │
-              └─────────────────────────┘
-```
-
----
 
 ## Agent Details
 
@@ -110,6 +37,7 @@ A distributed multi-agent AI system that accepts a natural language GTM query, d
 - Filters out irrelevant companies from results
 
 ### 5. GTM Strategy Agent (`agents/gtm_strategy_agent.py`)
+
 **Multi-Persona Targeting:**
 - **CEO**: Strategic/revenue/risk angles
 - **VP Sales**: Pipeline/quota/tools/efficiency angles
@@ -123,15 +51,6 @@ A distributed multi-agent AI system that accepts a natural language GTM query, d
 
 ---
 
-## Memory System
-
-### Vector Memory (RAG-style) (`memory/vector_memory.py`)
-- **Storage**: Each completed run stored with query, plan, results, signals, GTM strategy
-- **Retrieval**: FAISS inner-product search on query embeddings (cosine similarity on normalized vectors)
-- **Embeddings**: Deterministic pseudo-embeddings via MD5 hashing
-- **Cache hit**: When similarity ≥ 0.75, past context injected into Planner prompt
-- **Use cases**: Avoid repeated API calls, improve future responses, store intermediate reasoning
-- **Capacity**: 500 entries with automatic LRU eviction
 
 ## Orchestration Loop
 
@@ -251,6 +170,7 @@ npm install
 # Run development server
 REACT_APP_API_URL=http://localhost:8000 npm start
 # → UI available at http://localhost:3000
+```
 
 LIVE_URL= 'https://gtm-intelligence-zeta.vercel.app/'
 ## Failure Handling
