@@ -1,10 +1,10 @@
 groq
-dataclasses
 faiss-cpu
 numpy
-asyncio
 fastapi
+uvicorn
 pydantic
 tenacity
-hashlib
 httpx
+python-dotenv
+ 
