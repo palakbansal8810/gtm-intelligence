@@ -1,0 +1,10 @@
+groq
+dataclasses
+faiss
+numpy
+asyncio
+fastapi
+pydantic
+tenacity
+hashlib
+httpx
