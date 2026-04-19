@@ -1,6 +1,6 @@
 groq
 dataclasses
-faiss
+faiss-cpu
 numpy
 asyncio
 fastapi
